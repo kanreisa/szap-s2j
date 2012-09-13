@@ -32,12 +32,19 @@ static char *cband_desc[] = {
 		"Single LO, 5150 Mhz",
 		(char *)NULL };
 
+static char *jcsat_desc[] = {
+		"JCSAT 3A/4A",
+		"12268 MHz to 12733 MHz and 12268 MHz to 12733 MHz",
+		"Single LO, 11200 Mhz",
+		(char *)NULL };
+
 static struct lnb_types_st lnbs[] = {
 	{"UNIVERSAL",	univ_desc,		9750, 10600, 11700 },
  	{"DBS",		dbs_desc, 		11250, 0, 0 },
 	{"STANDARD",	standard_desc,		10000, 0, 0 },
 	{"ENHANCED",	enhan_desc,		9750, 0, 0 },
-	{"C-BAND",	cband_desc,		5150, 0, 0 }
+	{"C-BAND",	cband_desc,		5150, 0, 0 },
+	{"JCSAT",	jcsat_desc,		11200, 0, 0 }
 };
 
 /* Enumerate through standard types of LNB's until NULL returned.

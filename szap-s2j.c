@@ -1,4 +1,8 @@
-/* szap-s2 -- simple zapping tool for the Linux DVB S2 API
+/* szap-s2j -- simple zapping tool for the Linux DVB S2 API (for 128.0ÅãE/124.0ÅãE)
+ *
+ * https://github.com/kanreisa/szap-s2j
+ *
+ * szap-s2 -- simple zapping tool for the Linux DVB S2 API
  *
  * Copyright (C) 2008 Igor M. Liplianin (liplianin@me.by)
  *
@@ -43,7 +47,7 @@
 #include "lnb.h"
 
 #if DVB_API_VERSION < 5
-#error szap-s2 requires Linux DVB driver API version 5.0 or newer!
+#error szap-s2j requires Linux DVB driver API version 5.0 or newer!
 #endif
 
 
@@ -188,9 +192,9 @@ static int exit_after_tuning;
 static int interactive;
 
 static char *usage_str =
-    "\nusage: szap-s2 -q\n"
+    "\nusage: szap-s2j -q\n"
     "         list known channels\n"
-    "       szap-s2 [options] {-n channel-number|channel_name}\n"
+    "       szap-s2j [options] {-n channel-number|channel_name}\n"
     "         zap to channel via number or full name (case insensitive)\n"
     "     -a number : use given adapter (default 0)\n"
     "     -f number : use given frontend (default 0)\n"
@@ -503,7 +507,8 @@ int zap_to(unsigned int adapter, unsigned int frontend, unsigned int demux,
 
 	char fedev[128], dmxdev[128], auddev[128];
 	static int fefd, dmxfda, dmxfdv, dmxfdt = -1, audiofd = -1, patfd, pmtfd;
-	int pmtpid;
+	static int catfd, nitfd, bitfd, sdtfd, eitfd, totfd, ecmfd;
+	int pmtpid, ecmpid;
 	uint32_t ifreq;
 	int hiband, result;
 
@@ -560,6 +565,111 @@ int zap_to(unsigned int adapter, unsigned int frontend, unsigned int demux,
 				close(fefd);
 				return FALSE;
 			}
+
+			if ((catfd = open(dmxdev, O_RDWR)) < 0) {
+				perror("opening cat demux failed");
+				close(pmtfd);
+				close(patfd);
+				close(audiofd);
+				close(dmxfda);
+				close(dmxfdv);
+				close(dmxfdt);
+				close(fefd);
+				return FALSE;
+			}
+
+			if ((nitfd = open(dmxdev, O_RDWR)) < 0) {
+				perror("opening nit demux failed");
+				close(catfd);
+				close(pmtfd);
+				close(patfd);
+				close(audiofd);
+				close(dmxfda);
+				close(dmxfdv);
+				close(dmxfdt);
+				close(fefd);
+				return FALSE;
+			}
+
+			if ((bitfd = open(dmxdev, O_RDWR)) < 0) {
+				perror("opening bit demux failed");
+				close(nitfd);
+				close(catfd);
+				close(pmtfd);
+				close(patfd);
+				close(audiofd);
+				close(dmxfda);
+				close(dmxfdv);
+				close(dmxfdt);
+				close(fefd);
+				return FALSE;
+			}
+
+			if ((sdtfd = open(dmxdev, O_RDWR)) < 0) {
+				perror("opening sdt demux failed");
+				close(bitfd);
+				close(nitfd);
+				close(catfd);
+				close(pmtfd);
+				close(patfd);
+				close(audiofd);
+				close(dmxfda);
+				close(dmxfdv);
+				close(dmxfdt);
+				close(fefd);
+				return FALSE;
+			}
+
+			if ((eitfd = open(dmxdev, O_RDWR)) < 0) {
+				perror("opening eit demux failed");
+				close(sdtfd);
+				close(bitfd);
+				close(nitfd);
+				close(catfd);
+				close(pmtfd);
+				close(patfd);
+				close(audiofd);
+				close(dmxfda);
+				close(dmxfdv);
+				close(dmxfdt);
+				close(fefd);
+				return FALSE;
+			}
+
+			if ((totfd = open(dmxdev, O_RDWR)) < 0) {
+				perror("opening tot demux failed");
+				close(eitfd);
+				close(sdtfd);
+				close(bitfd);
+				close(nitfd);
+				close(catfd);
+				close(pmtfd);
+				close(patfd);
+				close(audiofd);
+				close(dmxfda);
+				close(dmxfdv);
+				close(dmxfdt);
+				close(fefd);
+				return FALSE;
+			}
+
+			if ((ecmfd = open(dmxdev, O_RDWR)) < 0) {
+				perror("opening ecm demux failed");
+				close(totfd);
+				close(eitfd);
+				close(sdtfd);
+				close(bitfd);
+				close(nitfd);
+				close(catfd);
+				close(pmtfd);
+				close(patfd);
+				close(audiofd);
+				close(dmxfda);
+				close(dmxfdv);
+				close(dmxfdt);
+				close(fefd);
+				return FALSE;
+			}
 		}
 	}
 
@@ -601,7 +711,14 @@ int zap_to(unsigned int adapter, unsigned int frontend, unsigned int demux,
 			}
 			if (set_demux(patfd, 0, DMX_PES_OTHER, dvr))
 				if (set_demux(pmtfd, pmtpid, DMX_PES_OTHER, dvr))
-					result = TRUE;
+					if (set_demux(catfd, 1, DMX_PES_OTHER, dvr))
+						if (set_demux(nitfd, 0x10, DMX_PES_OTHER, dvr))
+							if (set_demux(bitfd, 0x24, DMX_PES_OTHER, dvr))
+								if (set_demux(sdtfd, 0x11, DMX_PES_OTHER, dvr))
+									if (set_demux(eitfd, 0x12, DMX_PES_OTHER, dvr))
+										if (set_demux(totfd, 0x14, DMX_PES_OTHER, dvr))
+											if (set_demux(ecmfd, (vpid - 0xa00), DMX_PES_OTHER, dvr))
+												result = TRUE;
 		} else {
 			result = TRUE;
 		}
@@ -614,6 +731,13 @@ int zap_to(unsigned int adapter, unsigned int frontend, unsigned int demux,
 	check_frontend (fefd, dvr, human_readable, params_debug, hiband);
 
 	if (!interactive) {
+		close(ecmfd);
+		close(totfd);
+		close(eitfd);
+		close(sdtfd);
+		close(bitfd);
+		close(nitfd);
+		close(catfd);
 		close(patfd);
 		close(pmtfd);
 		if (audiofd >= 0)

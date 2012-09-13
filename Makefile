@@ -1,13 +1,13 @@
 CC=gcc
 
-SRC=lnb.c szap-s2.c
+SRC=lnb.c szap-s2j.c
 HED=lnb.h
-OBJ=lnb.o szap-s2.o
+OBJ=lnb.o szap-s2j.o
 
 BIND=/usr/local/bin/
 INCLUDE=-I../s2/linux/include
 
-TARGET=szap-s2
+TARGET=szap-s2j
 
 all: $(TARGET)
 
