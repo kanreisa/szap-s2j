@@ -1,4 +1,8 @@
-/* szap-s2 -- simple zapping tool for the Linux DVB S2 API
+/* szap-s2j -- simple zapping tool for the Linux DVB S2 API (for 128.0ÅãE/124.0ÅãE)
+ *
+ * https://github.com/kanreisa/szap-s2j
+ *
+ * szap-s2 -- simple zapping tool for the Linux DVB S2 API
  *
  * Copyright (C) 2008 Igor M. Liplianin (liplianin@me.by)
  *
@@ -43,7 +47,7 @@
 #include "lnb.h"
 
 #if DVB_API_VERSION < 5
-#error szap-s2 requires Linux DVB driver API version 5.0 or newer!
+#error szap-s2j requires Linux DVB driver API version 5.0 or newer!
 #endif
 
 
@@ -188,9 +192,9 @@ static int exit_after_tuning;
 static int interactive;
 
 static char *usage_str =
-    "\nusage: szap-s2 -q\n"
+    "\nusage: szap-s2j -q\n"
     "         list known channels\n"
-    "       szap-s2 [options] {-n channel-number|channel_name}\n"
+    "       szap-s2j [options] {-n channel-number|channel_name}\n"
     "         zap to channel via number or full name (case insensitive)\n"
     "     -a number : use given adapter (default 0)\n"
     "     -f number : use given frontend (default 0)\n"

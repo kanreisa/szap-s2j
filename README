@@ -1,4 +1,4 @@
-szap-s2 -- simple zapping tool for the Linux DVB S2 API
+szap-s2j -- simple zapping tool for the Linux DVB S2 API (for 128.0ÅãE/124.0ÅãE)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-szap-s2 requires Linux DVB driver API version 5.0.
+szap-s2j requires Linux DVB driver API version 5.0.
 
 If compiler not found DVB headers in ../s2/linux/include/linux/dvb,
 then it looks at usual location /usr/include/linux/dvb.
@@ -33,9 +33,9 @@ one line of the VDR channel file has the following format:
 name:frequency_MHz:polarization[coderate][delivery][modulation][rolloff]:sat_no:symbolrate:vpid:apid:?:?:service_id:?:?:?
 
 usage:
-szap -q
+szap-s2j -q
          list known channels
-szap [options] {-n channel-number|channel_name}
+szap-s2j [options] {-n channel-number|channel_name}
          zap to channel via number or full name (case insensitive)
      -a number : use given adapter (default 0)
      -f number : use given frontend (default 0)
